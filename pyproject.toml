@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "pfolio"
+version = "0.0.1.dev1"
+description = ""
+license = "Apache-2.0"
+authors = ["Stephen Yau <softwareentrepreneer+pfolio@gmail.com>"]
+readme = "README.md"
+homepage = "https://pfund.ai"
+repository = "https://github.com/PFund-Software-Ltd/pfolio"
+documentation = "https://pfolio-docs.pfund.ai"
+keywords = ["portfolio management", "investment", "analytics", "analysis"]
+
+[tool.poetry.dependencies]
+python = "^3.10 <3.12"
+quantstats = "^0.0.62"
+ffn = "^1.0.1"
+pyfolio-reloaded = "^0.9.5"
+alphalens-reloaded = "^0.4.3"
+empyrical-reloaded = "^0.5.9"
+pyportfolioopt = "^1.5.5"
+riskfolio-lib = "^6.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

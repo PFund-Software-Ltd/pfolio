@@ -12,6 +12,15 @@ keywords = ["portfolio management", "investment", "analytics", "analysis"]
 
 [tool.poetry.dependencies]
 python = "^3.10 <3.12"
+pfeed = "^0.0.1.dev6"
+pymc = "^5.12.0"
+statsmodels = "^0.14.1"
+scikit-learn = "^1.4.1.post1"
+cvxpy = "^1.4.2"
+plotly = "^5.20.0"
+seaborn = "^0.13.2"
+pyro-ppl = "^1.9.0"
+arviz = "^0.18.0"
 quantstats = "^0.0.62"
 ffn = "^1.0.1"
 pyfolio-reloaded = "^0.9.5"
@@ -19,6 +28,22 @@ alphalens-reloaded = "^0.4.3"
 empyrical-reloaded = "^0.5.9"
 pyportfolioopt = "^1.5.5"
 riskfolio-lib = "^6.0.0"
+skfolio = "^0.1.3"
+rsome = "^1.2.6"
+empyrial = "^2.1.4"
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+pfund = {path = "../pfund", develop = true}
+pfeed = {path = "../pfeed", develop = true}
+
+[tool.poetry.group.doc]
+optional = true
+
+[tool.poetry.group.doc.dependencies]
+jupyter-book = "^1.0.0"
 
 [build-system]
 requires = ["poetry-core"]

@@ -3591,7 +3591,7 @@ ptyprocess = ">=0.5"
 
 [[package]]
 name = "pfeed"
-version = "0.0.1.dev9"
+version = "0.0.1.dev10"
 description = "Data pipeline for algo-trading, getting and storing both real-time and historical data made easy."
 optional = false
 python-versions = ">=3.10 <3.13"
@@ -3603,7 +3603,7 @@ beautifulsoup4 = "^4.12.3"
 connectorx = {version = "^0.3.2", optional = true}
 minio = {version = "^7.2.5", optional = true}
 pandas = {version = "^2.2.0", optional = true}
-pfund = "^0.0.1.dev9"
+pfund = "^0.0.1.dev10"
 polars = {version = "^0.20.16", optional = true}
 psutil = {version = "^5.9.8", optional = true}
 pyarrow = {version = "^15.0.0", optional = true}
@@ -3622,7 +3622,7 @@ url = "../pfeed"
 
 [[package]]
 name = "pfund"
-version = "0.0.1.dev9"
+version = "0.0.1.dev10"
 description = "A Complete Algo-Trading Framework for Machine Learning, enabling trading across TradFi, CeFi and DeFi. Supports Vectorized and Event-Driven Backtesting, Paper and Live Trading"
 optional = false
 python-versions = ">=3.10 <3.13"
@@ -3643,7 +3643,7 @@ tqdm = "^4.66.2"
 websocket-client = "^1.7.0"
 
 [package.extras]
-data = ["orjson (>=3.9.14,<4.0.0)", "pfeed[boost,data,df] (>=0.0.1.dev9,<0.0.2)", "pyzmq (>=25.1.2,<26.0.0)"]
+data = ["orjson (>=3.9.14,<4.0.0)", "pfeed[boost,data,df] (>=0.0.1.dev10,<0.0.2)", "pyzmq (>=25.1.2,<26.0.0)"]
 ml = ["mlflow (>=2.11.3,<3.0.0)", "scikit-learn (>=1.4.0,<2.0.0)", "ta (>=0.11.0,<0.12.0)", "torch (>=2.1.2,<3.0.0)"]
 
 [package.source]
@@ -6442,4 +6442,4 @@ temporary = ["alphalens-reloaded", "empyrial", "empyrical-reloaded", "financetoo
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10 <3.13"
-content-hash = "aaffd3b1fe8178b907f991db58e419813a8d91545a35d9eb4667a9960d4ad75d"
+content-hash = "9f497563a9ae6f22535d57104c0cefc840b0aba5356b6872d65b525eeb905a8c"

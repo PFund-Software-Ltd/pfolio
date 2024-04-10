@@ -1323,7 +1323,7 @@ devel = ["colorama", "json-spec", "jsonschema", "pylint", "pytest", "pytest-benc
 name = "ffn"
 version = "1.0.1"
 description = "Financial functions for Python"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "ffn-1.0.1.tar.gz", hash = "sha256:e2609e32cb9030a9afc77aaa96ab37757d21864f2e1be2842438a6ac12030714"},
@@ -3520,7 +3520,7 @@ xml = ["lxml (>=4.9.2)"]
 name = "pandas-datareader"
 version = "0.10.0"
 description = "Data readers extracted from the pandas codebase,should be compatible with recent pandas versions"
-optional = false
+optional = true
 python-versions = ">=3.6"
 files = [
     {file = "pandas-datareader-0.10.0.tar.gz", hash = "sha256:9fc3c63d39bc0c10c2683f1c6d503ff625020383e38f6cbe14134826b454d5a6"},
@@ -6437,9 +6437,9 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 bayesian = ["arviz", "pymc", "pyro-ppl"]
 data = ["financedatabase", "pfeed"]
 portfolio = ["cvxpy", "pyportfolioopt", "riskfolio-lib", "skfolio"]
-temporary = ["alphalens-reloaded", "empyrial", "empyrical-reloaded", "financetoolkit", "finquant", "pyfolio-reloaded", "rsome", "thepassiveinvestor"]
+temporary = ["alphalens-reloaded", "empyrial", "empyrical-reloaded", "ffn", "financetoolkit", "finquant", "pyfolio-reloaded", "rsome", "thepassiveinvestor"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10 <3.13"
-content-hash = "9f497563a9ae6f22535d57104c0cefc840b0aba5356b6872d65b525eeb905a8c"
+content-hash = "958f5ac14a7d89c3011d80de1825a76ec5fdc05b914ead4bdaafa2678dcb937c"

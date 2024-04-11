@@ -44,8 +44,8 @@ portfolio = ['cvxpy', 'skfolio', 'pyportfolioopt' ,'riskfolio-lib']
 temporary = ['empyrial', 'pyfolio-reloaded', 'alphalens-reloaded', 'empyrical-reloaded', 'ffn', 'rsome', 'financetoolkit', 'thepassiveinvestor', 'finquant']
 
 [tool.poetry.group.dev.dependencies]
-pfund = {path = "../pfund", develop = true}
-pfeed = {path = "../pfeed", develop = true}
+pfund = { path = "../pfund", develop = true }
+pfeed = { path = "../pfeed", develop = true, extras = ["df", "data", "boost"] }
 
 [tool.poetry.group.doc.dependencies]
 jupyter-book = "^1.0.0"

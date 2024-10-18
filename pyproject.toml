@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pfolio"
-version = "0.0.1"
+version = "0.0.2.dev1"
 description = "Portfolio Management Library, including analysis, analytics and optimization"
 license = "Apache-2.0"
 authors = ["Stephen Yau <softwareentrepreneer+pfolio@gmail.com>"]
@@ -28,12 +28,14 @@ classifiers = [
 python = "^3.10"
 pfund = "^0.0.2"
 pfeed = { version = "^0.0.2", optional = true, extras = ["core", "dfs", "dataops"] }
+pfund-plot = {extras = ["all"], version = "^0.0.1.dev2", optional = true}
 statsmodels = "^0.14.0"
 scikit-learn = "^1.3.1"
 
 [tool.poetry.extras]
 data = ['pfeed']
-all = ['pfeed']
+plot = ['pfund-plot']
+all = ['pfeed', 'pfund-plot']
 
 [tool.poetry.scripts]
 pfolio = "pfolio.main:run_cli"
@@ -44,6 +46,7 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 pfund = { path = "../pfund", develop = true }
 pfeed = { path = "../pfeed", develop = true, extras = ["core", "dfs", "dataops"] }
+pfund-plot = { path = "../pfund-plot", develop = true, extras = ["all"] }
 mypy = "^1.11.2"
 ruff = "^0.6.9"
 grayskull = "^2.7.3"

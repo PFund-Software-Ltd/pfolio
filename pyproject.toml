@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pfolio"
-version = "0.0.2.dev1"
+version = "0.0.2"
 description = "Portfolio Management Library, including analysis, analytics and optimization"
 license = "Apache-2.0"
 authors = ["Stephen Yau <softwareentrepreneer+pfolio@gmail.com>"]

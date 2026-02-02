@@ -184,3 +184,9 @@ docs/_build/*
 
 # tests data
 tests/data/
+
+.python-version
+
+# pixi environments
+.pixi/*
+!.pixi/config.toml

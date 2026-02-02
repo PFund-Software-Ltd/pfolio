@@ -4,6 +4,7 @@ import pandas as pd
 import pfolio as po
 
 
+# FIXME: use narwhals instead
 def convert_to_polars_df(
     data: pd.DataFrame | pd.Series | pl.DataFrame | pl.Series | pl.LazyFrame,
 ) -> pl.DataFrame | pl.LazyFrame:

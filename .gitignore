@@ -190,3 +190,5 @@ tests/data/
 # pixi environments
 .pixi/*
 !.pixi/config.toml
+
+.claude/

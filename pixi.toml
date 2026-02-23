@@ -39,18 +39,15 @@ skfolio = ">=0.15.5"
 pfolio = { path = ".", editable = true }
 pfund = { path = "../pfund", editable = true }
 pfund-kit = { path = "../pfund-kit", editable = true }
-pfeed = { path = "../pfeed", editable = true, extras = ["duckdb", "yfinance", "fmp"] }
+pfeed = { path = "../pfeed", editable = true, extras = ["duckdb", "yfinance", "fmp", "dask", "spark"] }
 pfund-plot = { path = "../pfund-plot", editable = true, extras = ["marimo", 'jupyter'] }
 
 [feature.dev.pypi-dependencies]
 pfolio = { path = ".", editable = true }
 pandas-stubs = ">=2.3.3.260113"
 afterpython = ">=0.2.0"
-dask = { version = ">=2026.1.2", extras = ["complete", "dataframe"] }
-pyspark = { version = ">=4.1.1", extras = ["connect", "pandas-on-spark", "sql"] }
-pfeed = { path = "../pfeed", editable = true, extras = ["duckdb", "yfinance", "fmp"] }
+pfeed = { path = "../pfeed", editable = true, extras = ["duckdb", "yfinance", "fmp", "dask", "spark"] }
 pfund-plot = { path = "../pfund-plot", editable = true, extras = ["marimo", 'jupyter'] }
-statsmodels = ">=0.14.6"
 # TEMP: for reference
 qis = ">=3.4.7"
 pyfolio-reloaded = ">=0.9.9"

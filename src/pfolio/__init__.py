@@ -5,20 +5,30 @@ if TYPE_CHECKING:
     import pfund_plot as plot
     from pfolio.portfolio import Portfolio, analyze
     from pfolio.utils.aliases import (
-        SHARPE_RATIO, SHARPE,  # noqa: F401
-        ANNUALIZED_SHARPE_RATIO, ANNUALIZED_SHARPE,  # noqa: F401
-        SORTINO_RATIO, SORTINO,  # noqa: F401
-        ANNUALIZED_SORTINO_RATIO, ANNUALIZED_SORTINO,  # noqa: F401
-        CALMAR_RATIO, CALMAR,  # noqa: F401
-        MAX_DRAWDOWN, MAX_DD, MDD,  # noqa: F401
-        AVERAGE_DRAWDOWN, AVG_DD,  # noqa: F401
-        CVAR,  # noqa: F401
-        VALUE_AT_RISK, VAR,  # noqa: F401
-        MEAN,  # noqa: F401
-        ANNUALIZED_MEAN,  # noqa: F401
-        VARIANCE,  # noqa: F401
-        STANDARD_DEVIATION, STD,  # noqa: F401
-        SEMI_DEVIATION,  # noqa: F401
+        SHARPE_RATIO as SHARPE_RATIO,
+        SHARPE as SHARPE,
+        ANNUALIZED_SHARPE_RATIO as ANNUALIZED_SHARPE_RATIO,
+        ANNUALIZED_SHARPE as ANNUALIZED_SHARPE,
+        SORTINO_RATIO as SORTINO_RATIO,
+        SORTINO as SORTINO,
+        ANNUALIZED_SORTINO_RATIO as ANNUALIZED_SORTINO_RATIO,
+        ANNUALIZED_SORTINO as ANNUALIZED_SORTINO,
+        CALMAR_RATIO as CALMAR_RATIO,
+        CALMAR as CALMAR,
+        MAX_DRAWDOWN as MAX_DRAWDOWN,
+        MAX_DD as MAX_DD,
+        MDD as MDD,
+        AVERAGE_DRAWDOWN as AVERAGE_DRAWDOWN,
+        AVG_DD as AVG_DD,
+        CVAR as CVAR,
+        VALUE_AT_RISK as VALUE_AT_RISK,
+        VAR as VAR,
+        MEAN as MEAN,
+        ANNUALIZED_MEAN as ANNUALIZED_MEAN,
+        VARIANCE as VARIANCE,
+        STANDARD_DEVIATION as STANDARD_DEVIATION,
+        STD as STD,
+        SEMI_DEVIATION as SEMI_DEVIATION,
     )
 
 from importlib.metadata import version

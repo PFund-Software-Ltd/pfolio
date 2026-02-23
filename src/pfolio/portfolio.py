@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Literal, cast
 if TYPE_CHECKING:
     from narwhals.typing import IntoDataFrame
 
@@ -97,10 +97,14 @@ class Portfolio:
     def __init__(
         self,
         df: IntoDataFrame,
+        initial_capital: float = 1_000_000,
         annualized_factor: float | None = None,
+        contract_type: Literal['linear', 'inverse'] = 'linear',
+        contract_multiplier: float = 1,
         fee_bps: float = 0,
         slippage_bps: float = 0,
         fill_rate: float | None = None,
+        normalize_by: Literal['equity', 'notional'] = 'notional',
     ):
         """
         Thin wrapper that converts a DataFrame into a skfolio Portfolio.
@@ -112,18 +116,39 @@ class Portfolio:
                 Fallback mode:
                 - If 'position' is missing, assumes Buy & Hold (position = 1 for all bars),
                     implying one initial trade and no subsequent trades.
+            initial_capital: Starting capital in dollars. Default 1,000,000.
+                Only used when normalize_by='equity' (to build the equity curve).
+                Ignored when normalize_by='notional'.
             annualized_factor: Annualization factor (bars per year), e.g. 252 for
                 daily stock data, 365 for daily crypto, 52 for weekly.
                 If None, inferred from timestamp column in the data.
                 Raises ValueError if None and cannot be inferred.
+            contract_type: 'linear' (default) or 'inverse'.
+            contract_multiplier: For linear: dollar value per price point per contract (e.g. ES=50).
+                For inverse: USD notional per contract (e.g. 100 if 1 contract = 100 USD).
             fee_bps: Trading fee in basis points, applied on trade bars.
             slippage_bps: Slippage in basis points, applied on trade bars.
             fill_rate: Volume participation rate (0-1). Caps fill size at fill_rate * volume.
+            normalize_by: How to normalize dollar P&L into returns.
+                - 'notional' (default): ret = dollar_pnl / notional_exposure.
+                  Measures the strategy's edge per unit of exposure, ignoring
+                  idle cash. Use for pfund's vectorized/hybrid backtests where
+                  order size is fixed and cannot adapt to equity changes.
+                - 'equity': ret = dollar_pnl / prev_equity.
+                  Measures return on total capital including idle cash.
+                  Use for pfund's event-driven backtests where the strategy
+                  dynamically sizes orders based on current capital.
         """
         from pfolio.metrics.returns import absolute_returns
 
-        returns_df = to_polars(absolute_returns(df, fee_bps=fee_bps, slippage_bps=slippage_bps, fill_rate=fill_rate))
-        returns = returns_df['abs_rets'].drop_nulls().to_numpy()
+        returns_df = to_polars(absolute_returns(
+            df, initial_capital=initial_capital, contract_type=contract_type,
+            contract_multiplier=contract_multiplier,
+            fee_bps=fee_bps, slippage_bps=slippage_bps, fill_rate=fill_rate,
+            normalize_by=normalize_by,
+        ))
+        self._dollar_pnls = returns_df['pnl'].drop_nulls().to_numpy()
+        returns = returns_df['abs_ret'].drop_nulls().to_numpy()
 
         if annualized_factor is None:
             annualized_factor = _infer_bars_per_year(returns_df)
@@ -134,11 +159,23 @@ class Portfolio:
                     + "365 for daily crypto, 52 for weekly)."
                 )
 
+        self._returns = returns
+        # compounded=False (cumsum) because notional-normalized returns don't
+        # track a reinvested capital base — position size is fixed each bar,
+        # so cumprod would overstate cumulative returns by assuming reinvestment
+        # that never happened (and often can't due to lot sizes, min quantities, etc.).
+        # equity-normalized returns DO track a real capital base, so cumprod is correct.
+        compounded = normalize_by == 'equity'
         self._skfolio = SKPortfolio(
             X=returns.reshape(-1, 1),
             weights=np.array([1.0]),
             annualized_factor=annualized_factor,
+            compounded=compounded,
         )
+
+    def total_pnl(self) -> float:
+        """Total P&L in dollars: sum(dollar_pnls)."""
+        return float(self._dollar_pnls.sum())
 
     def __getattr__(self, name: str):
         """Delegate attribute access to the inner skfolio Portfolio."""
@@ -147,10 +184,14 @@ class Portfolio:
 
 def analyze(
     df: IntoDataFrame,
+    initial_capital: float = 1_000_000,
     annualized_factor: float | None = None,
+    contract_type: Literal['linear', 'inverse'] = 'linear',
+    contract_multiplier: float = 1,
     fee_bps: float = 0,
     slippage_bps: float = 0,
     fill_rate: float | None = None,
+    normalize_by: Literal['equity', 'notional'] = 'notional',
     metrics: list[BaseMeasure] | None = None,
     metric_bundle: str | None = None,
 ) -> dict[str, float]:
@@ -163,18 +204,30 @@ def analyze(
             Fallback mode:
             - If 'position' is missing, assumes Buy & Hold (position = 1 for all bars),
                 implying one initial trade and no subsequent trades.
+        initial_capital: Starting capital in dollars. Default 1,000,000.
+            Only used when normalize_by='equity'. Ignored when normalize_by='notional'.
         annualized_factor: Annualization factor (bars per year), e.g. 252 for
             daily stock data, 365 for daily crypto, 52 for weekly.
             If None, inferred from timestamp column in the data.
             Raises ValueError if None and cannot be inferred.
+        contract_type: 'linear' (default) or 'inverse'.
+        contract_multiplier: For linear: dollar value per price point per contract (e.g. ES=50).
+            For inverse: USD notional per contract (e.g. 100 if 1 contract = 100 USD).
         fee_bps: Trading fee in basis points, applied on trade bars.
         slippage_bps: Slippage in basis points, applied on trade bars.
         fill_rate: Volume participation rate (0-1). Caps fill size at fill_rate * volume.
+        normalize_by: How to normalize dollar P&L into returns. Default 'notional'.
+            See Portfolio docstring for details.
         metrics: List of skfolio measure enums to compute.
         metric_bundle: Metric bundle name ('performance', 'risk', 'drawdown', 'full').
             Ignored if metrics is provided.
     """
-    portfolio = Portfolio(df, annualized_factor=annualized_factor, fee_bps=fee_bps, slippage_bps=slippage_bps, fill_rate=fill_rate)
+    portfolio = Portfolio(
+        df, initial_capital=initial_capital, annualized_factor=annualized_factor,
+        contract_type=contract_type, contract_multiplier=contract_multiplier,
+        fee_bps=fee_bps, slippage_bps=slippage_bps,
+        fill_rate=fill_rate, normalize_by=normalize_by,
+    )
 
     if metrics is None:
         selected_bundle = metric_bundle or 'full'

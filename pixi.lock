@@ -54,7 +54,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/d8/3a/6ef2047a072e54e1142718d433d50e9514c999a58f51abfff7902f3a72f8/azure_storage_blob-12.28.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b9/21/624c95ddf0e643d3cceb629ce7be415b760617dcdfcc31cf85b896824726/azure_storage_file_datalake-12.23.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/77/f5/21d2de20e8b8b0408f0681956ca2c69f1320a3848ac50e6e7f39c6159675/babel-2.18.0-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/d5/90/1883cec16d667d944b08e8d8909b9b2f46cc1d2b9731e855e3c71f9b0450/basedpyright-1.38.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/28/92/42f4dc30a28c052a70c939d8dbb34102674b48c89369010442038d3c888b/basedpyright-1.38.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1a/39/47f9197bdd44df24d67ac8893641e16f386c984a0619ef2ee4c51fbbc019/beautifulsoup4-4.14.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/7d/f2/b2c570550e39bedc157715e43927360312d6dd677eed2cc149a802577491/black-26.1.0-cp311-cp311-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/cd/3a/577b549de0cc09d95f11087ee63c739bba856cd3952697eec4c4bb91350a/bleach-6.3.0-py3-none-any.whl
@@ -170,7 +170,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/7b/f0/92f2d609d6642b5f30cb50a885d2bf1483301c69d5786286500d15651ef2/lsprotocol-2025.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/77/d5/becbe1e2569b474a23f0c672ead8a29ac50b2dc1d5b9de184831bda8d14c/lxml-6.0.2-cp311-cp311-macosx_10_9_universal2.whl
       - pypi: https://files.pythonhosted.org/packages/34/36/5f9b772e85b3d5769367a79973b8030afad0d6b724444083bad09becd66f/lz4-4.4.5-cp311-cp311-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/47/d4/817cfdcf9636fc75036b9e0f7aa458c0bedec420d79768005ccfcf7fc9d8/marimo-0.19.11-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/93/55/6d128565bb18cb1f64707742bdbf05f7b1674e4063f70500de97b0be6a3e/marimo-0.20.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/59/1b/6ef961f543593969d25b2afe57a3564200280528caa9bd1082eecdd7b3bc/markdown-3.10.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b8/06/2697b5043c3ecb720ce0d243fc7cf5024c0b5b1e450506e9b21939019963/markdown2-2.5.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/94/54/e7d793b573f298e1c9013b8c4dade17d481164aa517d1d7148619c2cedbf/markdown_it_py-4.0.0-py3-none-any.whl
@@ -869,10 +869,10 @@ packages:
   - pytz ; extra == 'dev'
   - setuptools ; extra == 'dev'
   requires_python: '>=3.8'
-- pypi: https://files.pythonhosted.org/packages/d5/90/1883cec16d667d944b08e8d8909b9b2f46cc1d2b9731e855e3c71f9b0450/basedpyright-1.38.0-py3-none-any.whl
+- pypi: https://files.pythonhosted.org/packages/28/92/42f4dc30a28c052a70c939d8dbb34102674b48c89369010442038d3c888b/basedpyright-1.38.1-py3-none-any.whl
   name: basedpyright
-  version: 1.38.0
-  sha256: a6c11a343fd12a2152a0d721b0e92f54f2e2e3322ee2562197e27dad952f1a61
+  version: 1.38.1
+  sha256: 24f21661d2754687b64f3bc35efcc78781e11b08c8b2310312ed92bf178ea627
   requires_dist:
   - nodejs-wheel-binaries>=20.13.1
   requires_python: '>=3.8'
@@ -3198,10 +3198,10 @@ packages:
   - sphinx-bootstrap-theme ; extra == 'docs'
   - flake8 ; extra == 'flake8'
   requires_python: '>=3.9'
-- pypi: https://files.pythonhosted.org/packages/47/d4/817cfdcf9636fc75036b9e0f7aa458c0bedec420d79768005ccfcf7fc9d8/marimo-0.19.11-py3-none-any.whl
+- pypi: https://files.pythonhosted.org/packages/93/55/6d128565bb18cb1f64707742bdbf05f7b1674e4063f70500de97b0be6a3e/marimo-0.20.2-py3-none-any.whl
   name: marimo
-  version: 0.19.11
-  sha256: 4f98b677c89cada69c330e38f0747b4fca73cedb6f81b66832df3035ab8b6cff
+  version: 0.20.2
+  sha256: f94a1bd19fa85219d0549281776e7ec4c9253d5d5849d6f2459cc3ab868abbc5
   requires_dist:
   - click>=8.0,<9
   - jedi>=0.18.0
@@ -4551,7 +4551,7 @@ packages:
 - pypi: ../pfund-plot
   name: pfund-plot
   version: 0.0.1.dev3
-  sha256: 04803c63f5a08ecb9aaf0f5e2fc1baf4307d60f3ace520e52e67c9b49823239e
+  sha256: 43376fc106a31c1a61e28795bc5f95ed47383a94e41fcd1631550b742b0cd6ca
   requires_dist:
   - pfeed @ file:///Users/stephenyau/pfund.ai/pfeed
   - panel>=1.8.7
@@ -4560,8 +4560,8 @@ packages:
   - ipywidgets-bokeh>=1.6.0
   - pywebview>=6.1
   - datashader>=0.18.2
-  - marimo[recommended,lsp]>=0.19.11 ; extra == 'marimo'
-  - basedpyright>=1.38.0 ; extra == 'marimo'
+  - marimo[recommended,lsp]>=0.20.2 ; extra == 'marimo'
+  - basedpyright>=1.38.1 ; extra == 'marimo'
   - jupyter-bokeh>=4.0.5 ; extra == 'jupyter'
   - notebook>=7.5.3 ; extra == 'jupyter'
   - papermill>=2.6.0 ; extra == 'jupyter'

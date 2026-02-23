@@ -47,6 +47,7 @@ build-backend = "uv_build"
 [tool.pyright]
 # typeCheckingMode = "basic"
 reportAny = false
+reportUnreachable = false
 reportImportCycles = false
 reportMissingTypeStubs = false
 reportUnannotatedClassAttribute = false

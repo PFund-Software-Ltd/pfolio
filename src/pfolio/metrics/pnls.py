@@ -6,7 +6,6 @@ if TYPE_CHECKING:
 
 import polars as pl
 
-from pfund_kit.style import cprint, RichColor, TextStyle
 from pfolio.const import SUPPORTED_PRICE_COLUMNS
 from pfolio.config import get_config
 from pfolio.utils import detect_backend, to_polars, to_input_df
@@ -104,10 +103,7 @@ def _prepare_data(
     # Apply fill rate: cap trade_size by volume participation → recompute position
     if fill_rate is not None:
         if not has_position and not has_trade_size:
-            cprint(
-                "fill_rate ignored: no position or trade_size provided (Buy & Hold assumed)",
-                style=TextStyle.BOLD + RichColor.YELLOW
-            )
+            print("WARNING: fill_rate ignored: no position or trade_size provided (Buy & Hold assumed)")
         else:
             assert 0 <= fill_rate <= 1, f"fill_rate must be between 0 and 1, got {fill_rate}"
             assert 'volume' in cols, "fill_rate requires a 'volume' column in the data"

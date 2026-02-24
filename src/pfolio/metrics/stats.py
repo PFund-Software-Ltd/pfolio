@@ -6,12 +6,13 @@ from numpy.typing import NDArray
 
 class CustomMeasure(Enum):
     """Custom measures not provided by skfolio."""
-    WIN_RATE = 'win_rate'
-    AVG_WIN = 'avg_win'
-    AVG_LOSS = 'avg_loss'
-    PAYOFF_RATIO = 'payoff_ratio'
-    PROFIT_FACTOR = 'profit_factor'
-    TIME_IN_MARKET = 'time_in_market'
+
+    WIN_RATE = "win_rate"
+    AVG_WIN = "avg_win"
+    AVG_LOSS = "avg_loss"
+    PAYOFF_RATIO = "payoff_ratio"
+    PROFIT_FACTOR = "profit_factor"
+    TIME_IN_MARKET = "time_in_market"
 
 
 def win_rate(pnl: NDArray[np.floating], exclude_flat: bool = True) -> float:
@@ -184,6 +185,7 @@ def holding_periods(position: NDArray[np.floating]) -> NDArray[np.intp]:
         1-D array of holding period lengths (empty if never in market).
     """
     import polars as pl
+
     position = pl.Series(position).forward_fill().fill_null(0).to_numpy()
     if len(position) == 0:
         return np.array([], dtype=int)

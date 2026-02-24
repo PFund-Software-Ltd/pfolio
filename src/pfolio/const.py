@@ -1,1 +1,1 @@
-SUPPORTED_PRICE_COLUMNS = ['close', 'price']
+SUPPORTED_PRICE_COLUMNS = ["close", "price"]

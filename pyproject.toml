@@ -1,6 +1,6 @@
 [project]
 name = "pfolio"
-version = "0.0.2"
+version = "0.0.3"
 description = "portfolio analytics"
 license = "Apache-2.0"
 authors = [

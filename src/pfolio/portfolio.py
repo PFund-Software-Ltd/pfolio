@@ -4,6 +4,8 @@ if TYPE_CHECKING:
     from narwhals.typing import IntoDataFrame
 
 from datetime import datetime
+from functools import cached_property
+from numpy.typing import NDArray
 
 import polars as pl
 import numpy as np
@@ -17,6 +19,19 @@ from skfolio.measures import (
 )
 
 from pfolio.utils import to_polars
+from pfolio.metrics.stats import (
+    CustomMeasure,
+    win_rate as _win_rate,
+    avg_win as _avg_win,
+    avg_loss as _avg_loss,
+    payoff_ratio as _payoff_ratio,
+    profit_factor as _profit_factor,
+    time_in_market as _time_in_market,
+    win_streaks as _win_streaks,
+    loss_streaks as _loss_streaks,
+    holding_periods as _holding_periods,
+    drawdown_periods as _drawdown_periods,
+)
 
 
 __all__ = ['Portfolio', 'analyze']
@@ -60,7 +75,7 @@ def _infer_bars_per_year(df: pl.DataFrame) -> float | None:
 
 
 # Named metric bundles
-METRIC_BUNDLES: dict[str, list[BaseMeasure]] = {
+METRIC_BUNDLES: dict[str, list[BaseMeasure | CustomMeasure]] = {
     'performance': [
         PerfMeasure.MEAN,
         PerfMeasure.ANNUALIZED_MEAN,
@@ -86,11 +101,20 @@ METRIC_BUNDLES: dict[str, list[BaseMeasure]] = {
         RatioMeasure.DRAWDOWN_AT_RISK_RATIO,
         RatioMeasure.AVERAGE_DRAWDOWN_RATIO,
     ],
+    'trading': [
+        CustomMeasure.WIN_RATE,
+        CustomMeasure.AVG_WIN,
+        CustomMeasure.AVG_LOSS,
+        CustomMeasure.PAYOFF_RATIO,
+        CustomMeasure.PROFIT_FACTOR,
+        CustomMeasure.TIME_IN_MARKET,
+    ],
 }
 METRIC_BUNDLES['full'] = (
     METRIC_BUNDLES['performance'] +
     METRIC_BUNDLES['risk'] +
-    METRIC_BUNDLES['drawdown']
+    METRIC_BUNDLES['drawdown'] +
+    METRIC_BUNDLES['trading']
 )
 
 
@@ -149,17 +173,16 @@ class Portfolio:
         """
         from pfolio.metrics.returns import absolute_returns
 
-        returns_df = to_polars(absolute_returns(
+        self._df = to_polars(absolute_returns(
             df, initial_capital=initial_capital, contract_type=contract_type,
             contract_multiplier=contract_multiplier,
             fee_bps=fee_bps, slippage_bps=slippage_bps, fill_rate=fill_rate,
             normalize_by=normalize_by,
         ))
-        self._dollar_pnls = returns_df['pnl'].drop_nulls().to_numpy()
-        returns = returns_df['ret'].drop_nulls().to_numpy()
+        returns = self._df['ret'].drop_nulls().to_numpy()
 
         if annualized_factor is None:
-            annualized_factor = _infer_bars_per_year(returns_df)
+            annualized_factor = _infer_bars_per_year(self._df)
             if annualized_factor is None:
                 raise ValueError(
                     "Cannot infer annualized_factor: no timestamp column found or insufficient data. "
@@ -167,7 +190,6 @@ class Portfolio:
                     + "365 for daily crypto, 52 for weekly)."
                 )
 
-        self._returns = returns
         # compounded=False (cumsum) because notional-normalized returns don't
         # track a reinvested capital base — position size is fixed each bar,
         # so cumprod would overstate cumulative returns by assuming reinvestment
@@ -182,13 +204,43 @@ class Portfolio:
             risk_free_rate=risk_free_rate,
             **skfolio_kwargs,
         )
+    
+    @cached_property
+    def _dollar_pnls(self) -> NDArray[np.floating]:
+        return self._df['pnl'].drop_nulls().to_numpy()
+    
+    @cached_property
+    def _position(self) -> NDArray[np.floating]:
+        return self._df['position'].to_numpy()
+    
+    @property
+    def df(self) -> pl.DataFrame:
+        return self._df
 
     def total_pnl(self) -> float:
         """Total P&L in dollars: sum(dollar_pnls)."""
         return float(self._dollar_pnls.sum())
 
+    # Custom stats: maps attr name → (function, data attribute)
+    _CUSTOM_STATS: dict[str, tuple[Any, str]] = {
+        'win_rate': (_win_rate, '_dollar_pnls'),
+        'avg_win': (_avg_win, '_dollar_pnls'),
+        'avg_loss': (_avg_loss, '_dollar_pnls'),
+        'payoff_ratio': (_payoff_ratio, '_dollar_pnls'),
+        'profit_factor': (_profit_factor, '_dollar_pnls'),
+        'time_in_market': (_time_in_market, '_position'),
+        'win_streaks': (_win_streaks, '_dollar_pnls'),
+        'loss_streaks': (_loss_streaks, '_dollar_pnls'),
+        'holding_periods': (_holding_periods, '_position'),
+    }
+
     def __getattr__(self, name: str):
-        """Delegate attribute access to the inner skfolio Portfolio."""
+        """Delegate attribute access to custom stats or skfolio Portfolio."""
+        if name in self._CUSTOM_STATS:
+            func, data_attr = self._CUSTOM_STATS[name]
+            return func(object.__getattribute__(self, data_attr))
+        if name == 'drawdown_periods':
+            return _drawdown_periods(cast(NDArray[np.floating], self._skfolio.drawdowns))
         return getattr(self._skfolio, name)
 
 
@@ -203,7 +255,7 @@ def analyze(
     fill_rate: float | None = None,
     normalize_by: Literal['equity', 'notional'] = 'notional',
     risk_free_rate: float = 0,
-    metrics: list[BaseMeasure] | None = None,
+    metrics: list[BaseMeasure | CustomMeasure] | None = None,
     metric_bundle: str | None = None,
     **skfolio_kwargs: Any,
 ) -> dict[str, float]:

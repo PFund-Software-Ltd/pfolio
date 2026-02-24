@@ -4,7 +4,20 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     import pfund_plot as plot
     from pfolio.portfolio import Portfolio, analyze
+    from pfolio.metrics.stats import (
+        win_streaks as win_streaks,
+        loss_streaks as loss_streaks,
+        holding_periods as holding_periods,
+        drawdown_periods as drawdown_periods,
+    )
     from pfolio.utils.aliases import (
+        # CustomMeasure
+        WIN_RATE as WIN_RATE,
+        AVG_WIN as AVG_WIN,
+        AVG_LOSS as AVG_LOSS,
+        PAYOFF_RATIO as PAYOFF_RATIO,
+        PROFIT_FACTOR as PROFIT_FACTOR,
+        TIME_IN_MARKET as TIME_IN_MARKET,
         # PerfMeasure
         MEAN as MEAN,
         ANNUALIZED_MEAN as ANNUALIZED_MEAN,
@@ -131,6 +144,13 @@ _ALIASES = (
     'EDAR_RATIO',
     'ULCER_INDEX_RATIO',
     'GINI_MEAN_DIFFERENCE_RATIO',
+    # CustomMeasure
+    'WIN_RATE',
+    'AVG_WIN',
+    'AVG_LOSS',
+    'PAYOFF_RATIO',
+    'PROFIT_FACTOR',
+    'TIME_IN_MARKET',
 )
 
 
@@ -144,6 +164,19 @@ def __getattr__(name: str):
     elif name == 'analyze':
         from pfolio.portfolio import analyze
         return analyze
+    # stats (return arrays, not floats) that are not covered in CustomMeasure
+    elif name == 'win_streaks':
+        from pfolio.metrics.stats import win_streaks
+        return win_streaks
+    elif name == 'loss_streaks':
+        from pfolio.metrics.stats import loss_streaks
+        return loss_streaks
+    elif name == 'holding_periods':
+        from pfolio.metrics.stats import holding_periods
+        return holding_periods
+    elif name == 'drawdown_periods':
+        from pfolio.metrics.stats import drawdown_periods
+        return drawdown_periods
     elif name in _ALIASES:
         from pfolio.utils import aliases
         return getattr(aliases, name)
@@ -157,6 +190,11 @@ __all__ = (
     'plot',
     'Portfolio',
     'analyze',
+    # stats (return arrays, not floats) that are not covered in CustomMeasure
+    'win_streaks',
+    'loss_streaks',
+    'holding_periods',
+    'drawdown_periods',
     *_ALIASES,
 )
 def __dir__():

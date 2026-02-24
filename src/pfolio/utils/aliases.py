@@ -4,6 +4,8 @@ from skfolio.measures import (
     ExtraRiskMeasure,
     RatioMeasure,
 )
+from pfolio.metrics.stats import CustomMeasure
+
 
 # === PerfMeasure ===
 MEAN = PerfMeasure.MEAN
@@ -58,3 +60,11 @@ AVERAGE_DRAWDOWN_RATIO = AVG_DD_RATIO = RatioMeasure.AVERAGE_DRAWDOWN_RATIO
 EDAR_RATIO = RatioMeasure.EDAR_RATIO
 ULCER_INDEX_RATIO = RatioMeasure.ULCER_INDEX_RATIO
 GINI_MEAN_DIFFERENCE_RATIO = RatioMeasure.GINI_MEAN_DIFFERENCE_RATIO
+
+# === CustomMeasure ===
+WIN_RATE = CustomMeasure.WIN_RATE
+AVG_WIN = CustomMeasure.AVG_WIN
+AVG_LOSS = CustomMeasure.AVG_LOSS
+PAYOFF_RATIO = CustomMeasure.PAYOFF_RATIO
+PROFIT_FACTOR = CustomMeasure.PROFIT_FACTOR
+TIME_IN_MARKET = CustomMeasure.TIME_IN_MARKET

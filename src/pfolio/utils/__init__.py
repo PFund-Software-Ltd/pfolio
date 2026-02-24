@@ -1,16 +1,18 @@
 # pyright: reportUnknownVariableType=false, reportUnknownMemberType=false
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     import pandas as pd
-    from narwhals.typing import IntoDataFrame
     from dask.dataframe import DataFrame as DaskDataFrame
+    from narwhals.typing import IntoDataFrame
     from pyspark.sql import DataFrame as SparkDataFrame
 
 import types
 
-import polars as pl
 import narwhals as nw
+import polars as pl
 
 
 def detect_backend(df: IntoDataFrame) -> types.ModuleType:
@@ -30,19 +32,23 @@ def to_polars(df: IntoDataFrame) -> pl.DataFrame:
     return nw.from_native(df, eager_only=True).to_polars()
 
 
-def to_input_df(df: pl.DataFrame, native_backend: types.ModuleType) -> pd.DataFrame | pl.DataFrame | DaskDataFrame | SparkDataFrame:
+def to_input_df(
+    df: pl.DataFrame, native_backend: types.ModuleType
+) -> pd.DataFrame | pl.DataFrame | DaskDataFrame | SparkDataFrame:
     """Convert polars DataFrame back to the caller's native backend."""
     backend_name = native_backend.__name__
-    if backend_name == 'polars':
+    if backend_name == "polars":
         return df
-    elif backend_name == 'pandas':
+    elif backend_name == "pandas":
         return df.to_pandas()
-    elif 'dask' in backend_name:
+    elif "dask" in backend_name:
         import dask.dataframe as dd
+
         return dd.from_pandas(df.to_pandas(), npartitions=1)
-    elif 'pyspark' in backend_name:
+    elif "pyspark" in backend_name:
         from pyspark.sql import SparkSession
+
         spark = SparkSession.builder.getOrCreate()
         return spark.createDataFrame(df.to_pandas())
     else:
-        raise ValueError(f'Unsupported native backend: {backend_name}')
+        raise ValueError(f"Unsupported native backend: {backend_name}")

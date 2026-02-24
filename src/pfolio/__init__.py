@@ -1,6 +1,9 @@
 # pyright: reportUnusedImport=false, reportUnsupportedDunderAll=false
+# ruff: noqa: I001
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     import pfund_plot as plot
     from pfolio.portfolio import Portfolio, analyze
@@ -90,112 +93,145 @@ if TYPE_CHECKING:
     )
 
 from importlib.metadata import version
-from pfolio.config import get_config, configure
 
+from pfolio.config import configure, get_config
 
-__version__ = version('pfolio')
+__version__ = version("pfolio")
 
 
 # All alias names from utils/aliases.py
 _ALIASES = (
     # PerfMeasure
-    'MEAN',
-    'ANNUALIZED_MEAN',
+    "MEAN",
+    "ANNUALIZED_MEAN",
     # RiskMeasure
-    'VARIANCE', 'ANNUALIZED_VARIANCE',
-    'SEMI_VARIANCE', 'ANNUALIZED_SEMI_VARIANCE',
-    'STANDARD_DEVIATION', 'STD',
-    'ANNUALIZED_STANDARD_DEVIATION', 'ANNUALIZED_STD',
-    'SEMI_DEVIATION', 'ANNUALIZED_SEMI_DEVIATION',
-    'MEAN_ABSOLUTE_DEVIATION', 'MAD',
-    'CVAR', 'EVAR',
-    'WORST_REALIZATION',
-    'CDAR',
-    'MAX_DRAWDOWN', 'MAX_DD', 'MDD',
-    'AVERAGE_DRAWDOWN', 'AVG_DD',
-    'EDAR',
-    'FIRST_LOWER_PARTIAL_MOMENT', 'FLPM',
-    'ULCER_INDEX',
-    'GINI_MEAN_DIFFERENCE',
+    "VARIANCE",
+    "ANNUALIZED_VARIANCE",
+    "SEMI_VARIANCE",
+    "ANNUALIZED_SEMI_VARIANCE",
+    "STANDARD_DEVIATION",
+    "STD",
+    "ANNUALIZED_STANDARD_DEVIATION",
+    "ANNUALIZED_STD",
+    "SEMI_DEVIATION",
+    "ANNUALIZED_SEMI_DEVIATION",
+    "MEAN_ABSOLUTE_DEVIATION",
+    "MAD",
+    "CVAR",
+    "EVAR",
+    "WORST_REALIZATION",
+    "CDAR",
+    "MAX_DRAWDOWN",
+    "MAX_DD",
+    "MDD",
+    "AVERAGE_DRAWDOWN",
+    "AVG_DD",
+    "EDAR",
+    "FIRST_LOWER_PARTIAL_MOMENT",
+    "FLPM",
+    "ULCER_INDEX",
+    "GINI_MEAN_DIFFERENCE",
     # ExtraRiskMeasure
-    'VALUE_AT_RISK', 'VAR',
-    'DRAWDOWN_AT_RISK', 'DAR',
-    'ENTROPIC_RISK_MEASURE',
-    'FOURTH_CENTRAL_MOMENT',
-    'FOURTH_LOWER_PARTIAL_MOMENT',
-    'SKEW',
-    'KURTOSIS',
+    "VALUE_AT_RISK",
+    "VAR",
+    "DRAWDOWN_AT_RISK",
+    "DAR",
+    "ENTROPIC_RISK_MEASURE",
+    "FOURTH_CENTRAL_MOMENT",
+    "FOURTH_LOWER_PARTIAL_MOMENT",
+    "SKEW",
+    "KURTOSIS",
     # RatioMeasure
-    'SHARPE_RATIO', 'SHARPE',
-    'ANNUALIZED_SHARPE_RATIO', 'ANNUALIZED_SHARPE',
-    'SORTINO_RATIO', 'SORTINO',
-    'ANNUALIZED_SORTINO_RATIO', 'ANNUALIZED_SORTINO',
-    'MEAN_ABSOLUTE_DEVIATION_RATIO', 'MAD_RATIO',
-    'FIRST_LOWER_PARTIAL_MOMENT_RATIO', 'FLPM_RATIO',
-    'VALUE_AT_RISK_RATIO', 'VAR_RATIO',
-    'CVAR_RATIO',
-    'ENTROPIC_RISK_MEASURE_RATIO',
-    'EVAR_RATIO',
-    'WORST_REALIZATION_RATIO',
-    'DRAWDOWN_AT_RISK_RATIO', 'DAR_RATIO',
-    'CDAR_RATIO',
-    'CALMAR_RATIO', 'CALMAR',
-    'AVERAGE_DRAWDOWN_RATIO', 'AVG_DD_RATIO',
-    'EDAR_RATIO',
-    'ULCER_INDEX_RATIO',
-    'GINI_MEAN_DIFFERENCE_RATIO',
+    "SHARPE_RATIO",
+    "SHARPE",
+    "ANNUALIZED_SHARPE_RATIO",
+    "ANNUALIZED_SHARPE",
+    "SORTINO_RATIO",
+    "SORTINO",
+    "ANNUALIZED_SORTINO_RATIO",
+    "ANNUALIZED_SORTINO",
+    "MEAN_ABSOLUTE_DEVIATION_RATIO",
+    "MAD_RATIO",
+    "FIRST_LOWER_PARTIAL_MOMENT_RATIO",
+    "FLPM_RATIO",
+    "VALUE_AT_RISK_RATIO",
+    "VAR_RATIO",
+    "CVAR_RATIO",
+    "ENTROPIC_RISK_MEASURE_RATIO",
+    "EVAR_RATIO",
+    "WORST_REALIZATION_RATIO",
+    "DRAWDOWN_AT_RISK_RATIO",
+    "DAR_RATIO",
+    "CDAR_RATIO",
+    "CALMAR_RATIO",
+    "CALMAR",
+    "AVERAGE_DRAWDOWN_RATIO",
+    "AVG_DD_RATIO",
+    "EDAR_RATIO",
+    "ULCER_INDEX_RATIO",
+    "GINI_MEAN_DIFFERENCE_RATIO",
     # CustomMeasure
-    'WIN_RATE',
-    'AVG_WIN',
-    'AVG_LOSS',
-    'PAYOFF_RATIO',
-    'PROFIT_FACTOR',
-    'TIME_IN_MARKET',
+    "WIN_RATE",
+    "AVG_WIN",
+    "AVG_LOSS",
+    "PAYOFF_RATIO",
+    "PROFIT_FACTOR",
+    "TIME_IN_MARKET",
 )
 
 
 def __getattr__(name: str):
-    if name == 'plot':
+    if name == "plot":
         import pfund_plot as plot
+
         return plot
-    elif name == 'Portfolio':
+    elif name == "Portfolio":
         from pfolio.portfolio import Portfolio
+
         return Portfolio
-    elif name == 'analyze':
+    elif name == "analyze":
         from pfolio.portfolio import analyze
+
         return analyze
     # stats (return arrays, not floats) that are not covered in CustomMeasure
-    elif name == 'win_streaks':
+    elif name == "win_streaks":
         from pfolio.metrics.stats import win_streaks
+
         return win_streaks
-    elif name == 'loss_streaks':
+    elif name == "loss_streaks":
         from pfolio.metrics.stats import loss_streaks
+
         return loss_streaks
-    elif name == 'holding_periods':
+    elif name == "holding_periods":
         from pfolio.metrics.stats import holding_periods
+
         return holding_periods
-    elif name == 'drawdown_periods':
+    elif name == "drawdown_periods":
         from pfolio.metrics.stats import drawdown_periods
+
         return drawdown_periods
     elif name in _ALIASES:
         from pfolio.utils import aliases
+
         return getattr(aliases, name)
     raise AttributeError(f"module 'pfolio' has no attribute '{name}'")
 
 
 __all__ = (
-    '__version__',
-    'get_config',
-    'configure',
-    'plot',
-    'Portfolio',
-    'analyze',
+    "__version__",
+    "get_config",
+    "configure",
+    "plot",
+    "Portfolio",
+    "analyze",
     # stats (return arrays, not floats) that are not covered in CustomMeasure
-    'win_streaks',
-    'loss_streaks',
-    'holding_periods',
-    'drawdown_periods',
+    "win_streaks",
+    "loss_streaks",
+    "holding_periods",
+    "drawdown_periods",
     *_ALIASES,
 )
+
+
 def __dir__():
     return sorted(__all__)

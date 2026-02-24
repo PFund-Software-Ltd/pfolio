@@ -1,7 +1,7 @@
 from pfolio.metrics.pnls import (
     dollar_pnls,
-    unrealized_pnls,
     realized_pnls,
+    unrealized_pnls,
 )
 from pfolio.metrics.returns import (
     absolute_returns,
@@ -9,9 +9,9 @@ from pfolio.metrics.returns import (
 )
 
 __all__ = (
-    'dollar_pnls',
-    'unrealized_pnls',
-    'realized_pnls',
-    'absolute_returns',
-    'log_returns',
+    "absolute_returns",
+    "dollar_pnls",
+    "log_returns",
+    "realized_pnls",
+    "unrealized_pnls",
 )

@@ -1,6 +1,6 @@
 from __future__ import annotations
-from dataclasses import dataclass
 
+from dataclasses import dataclass
 
 _config: PFolioConfig | None = None
 
@@ -15,9 +15,7 @@ def get_config() -> PFolioConfig:
     return _config
 
 
-def configure(
-    debug: bool | None = None
-):
+def configure(debug: bool | None = None):
     config = get_config()
     if debug is not None:
         config.debug = debug

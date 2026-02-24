@@ -1,24 +1,26 @@
 # pyright: reportReturnType=false
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Literal
+
 if TYPE_CHECKING:
     from narwhals.typing import IntoDataFrameT
 
 import polars as pl
 
 from pfolio.metrics.pnls import dollar_pnls, get_contract_expressions
-from pfolio.utils import detect_backend, to_polars, to_input_df
+from pfolio.utils import detect_backend, to_input_df, to_polars
 
 
 def absolute_returns(
     df: IntoDataFrameT,
     initial_capital: float = 1_000_000,
-    contract_type: Literal['linear', 'inverse'] = 'linear',
+    contract_type: Literal["linear", "inverse"] = "linear",
     contract_multiplier: float = 1,
     fee_bps: float = 0,
     slippage_bps: float = 0,
     fill_rate: float | None = None,
-    normalize_by: Literal['equity', 'notional'] = 'notional',
+    normalize_by: Literal["equity", "notional"] = "notional",
 ) -> IntoDataFrameT:
     """Calculate absolute returns per bar.
 
@@ -45,53 +47,60 @@ def absolute_returns(
 
     Adds columns: 'pnl', 'ret' (and 'equity' when normalize_by='equity')
     """
-    if normalize_by == 'equity' and initial_capital <= 0:
+    if normalize_by == "equity" and initial_capital <= 0:
         raise ValueError(f"initial_capital must be positive, got {initial_capital}")
 
-    _df = to_polars(dollar_pnls(df, contract_type=contract_type,
-                                 contract_multiplier=contract_multiplier,
-                                 fee_bps=fee_bps, slippage_bps=slippage_bps, fill_rate=fill_rate))
+    _df = to_polars(
+        dollar_pnls(
+            df,
+            contract_type=contract_type,
+            contract_multiplier=contract_multiplier,
+            fee_bps=fee_bps,
+            slippage_bps=slippage_bps,
+            fill_rate=fill_rate,
+        )
+    )
 
-    if normalize_by == 'equity':
+    if normalize_by == "equity":
         # equity = initial_capital + cumsum(pnl)
         _df = _df.with_columns(
-            (pl.lit(initial_capital) + pl.col('pnl').cum_sum()).alias('equity')
+            (pl.lit(initial_capital) + pl.col("pnl").cum_sum()).alias("equity")
         )
         # ret = pnl / prev_equity
         # For bar 0, prev_equity = initial_capital (equity before any P&L)
         prev_equity = (
-            pl.col('equity')
-            .shift(1)
-            .forward_fill()
-            .fill_null(pl.lit(initial_capital))
+            pl.col("equity").shift(1).forward_fill().fill_null(pl.lit(initial_capital))
         )
-        _df = _df.with_columns(
-            (pl.col('pnl') / prev_equity).alias('ret')
-        )
-    elif normalize_by == 'notional':
+        _df = _df.with_columns((pl.col("pnl") / prev_equity).alias("ret"))
+    elif normalize_by == "notional":
         # ret = pnl / notional_exposure
         # Notional is contract-type-aware (from get_contract_expressions).
         from pfolio.const import SUPPORTED_PRICE_COLUMNS
+
         ref_price = next(c for c in SUPPORTED_PRICE_COLUMNS if c in _df.columns)
         cost_rate = (fee_bps + slippage_bps) / 10_000
-        prev_position = pl.col('position').shift(1)
+        prev_position = pl.col("position").shift(1)
         price = pl.col(ref_price)
         _raw_pnl, _trade_cost, notional = get_contract_expressions(
-            contract_type, cost_rate, contract_multiplier,
+            contract_type,
+            cost_rate,
+            contract_multiplier,
             exposure=prev_position,
             current_price=price,
             base_price=pl.col(ref_price).shift(1),
-            trade_qty=pl.col('trade_size').abs(),
+            trade_qty=pl.col("trade_size").abs(),
             cost_price=price,
         )
         _df = _df.with_columns(
             pl.when((notional == 0) | notional.is_null())
-                .then(pl.lit(0.0))
-                .otherwise(pl.col('pnl') / notional)
-                .alias('ret')
+            .then(pl.lit(0.0))
+            .otherwise(pl.col("pnl") / notional)
+            .alias("ret")
         )
     else:
-        raise ValueError(f"normalize_by must be 'equity' or 'notional', got '{normalize_by}'")
+        raise ValueError(
+            f"normalize_by must be 'equity' or 'notional', got '{normalize_by}'"
+        )
 
     return to_input_df(_df, native_backend=detect_backend(df))
 
@@ -99,12 +108,12 @@ def absolute_returns(
 def log_returns(
     df: IntoDataFrameT,
     initial_capital: float = 1_000_000,
-    contract_type: Literal['linear', 'inverse'] = 'linear',
+    contract_type: Literal["linear", "inverse"] = "linear",
     contract_multiplier: float = 1,
     fee_bps: float = 0,
     slippage_bps: float = 0,
     fill_rate: float | None = None,
-    normalize_by: Literal['equity', 'notional'] = 'notional',
+    normalize_by: Literal["equity", "notional"] = "notional",
 ) -> IntoDataFrameT:
     """Calculate log returns = ln(1 + ret).
 
@@ -115,18 +124,22 @@ def log_returns(
     Adds columns: 'pnl', 'ret', 'log_ret' (and 'equity' when normalize_by='equity')
     """
     _df = to_polars(
-        absolute_returns(df, initial_capital=initial_capital, contract_type=contract_type,
-                         contract_multiplier=contract_multiplier,
-                         fee_bps=fee_bps, slippage_bps=slippage_bps, fill_rate=fill_rate,
-                         normalize_by=normalize_by)
+        absolute_returns(
+            df,
+            initial_capital=initial_capital,
+            contract_type=contract_type,
+            contract_multiplier=contract_multiplier,
+            fee_bps=fee_bps,
+            slippage_bps=slippage_bps,
+            fill_rate=fill_rate,
+            normalize_by=normalize_by,
+        )
     )
-    _df = _df.with_columns(
-        (1 + pl.col('ret')).log().alias('log_ret')
-    )
+    _df = _df.with_columns((1 + pl.col("ret")).log().alias("log_ret"))
     return to_input_df(_df, native_backend=detect_backend(df))
 
 
 # TODO: requires benchmark data
-def relative_returns(df: IntoDataFrameT, benchmark: str = '') -> IntoDataFrameT:
+def relative_returns(df: IntoDataFrameT, benchmark: str = "") -> IntoDataFrameT:
     """Calculate relative returns = strategy return - benchmark return."""
     raise NotImplementedError

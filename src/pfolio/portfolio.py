@@ -1,24 +1,26 @@
+# ruff: noqa: I001
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any, Literal, cast
+
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, cast
+
 if TYPE_CHECKING:
     from narwhals.typing import IntoDataFrame
 
 from datetime import datetime
 from functools import cached_property
-from numpy.typing import NDArray
 
-import polars as pl
 import numpy as np
+import polars as pl
+from numpy.typing import NDArray
 from skfolio import Portfolio as SKPortfolio
 from skfolio.measures import (
     BaseMeasure,
-    PerfMeasure,
-    RiskMeasure,
     ExtraRiskMeasure,
+    PerfMeasure,
     RatioMeasure,
+    RiskMeasure,
 )
 
-from pfolio.utils import to_polars
 from pfolio.metrics.stats import (
     CustomMeasure,
     win_rate as _win_rate,
@@ -32,13 +34,13 @@ from pfolio.metrics.stats import (
     holding_periods as _holding_periods,
     drawdown_periods as _drawdown_periods,
 )
+from pfolio.utils import to_polars
 
-
-__all__ = ['Portfolio', 'analyze']
-
+__all__ = ["Portfolio", "analyze"]
 
 
 SECONDS_PER_YEAR = 365.25 * 24 * 3600  # ~31_557_600
+
 
 def _infer_bars_per_year(df: pl.DataFrame) -> float | None:
     """Infer annualized factor from timestamp data empirically.
@@ -76,7 +78,7 @@ def _infer_bars_per_year(df: pl.DataFrame) -> float | None:
 
 # Named metric bundles
 METRIC_BUNDLES: dict[str, list[BaseMeasure | CustomMeasure]] = {
-    'performance': [
+    "performance": [
         PerfMeasure.MEAN,
         PerfMeasure.ANNUALIZED_MEAN,
         RatioMeasure.SHARPE_RATIO,
@@ -85,7 +87,7 @@ METRIC_BUNDLES: dict[str, list[BaseMeasure | CustomMeasure]] = {
         RatioMeasure.ANNUALIZED_SORTINO_RATIO,
         RatioMeasure.CALMAR_RATIO,
     ],
-    'risk': [
+    "risk": [
         RiskMeasure.STANDARD_DEVIATION,
         RiskMeasure.ANNUALIZED_STANDARD_DEVIATION,
         RiskMeasure.CVAR,
@@ -94,14 +96,14 @@ METRIC_BUNDLES: dict[str, list[BaseMeasure | CustomMeasure]] = {
         ExtraRiskMeasure.SKEW,
         ExtraRiskMeasure.KURTOSIS,
     ],
-    'drawdown': [
+    "drawdown": [
         RiskMeasure.MAX_DRAWDOWN,
         RiskMeasure.AVERAGE_DRAWDOWN,
         ExtraRiskMeasure.DRAWDOWN_AT_RISK,
         RatioMeasure.DRAWDOWN_AT_RISK_RATIO,
         RatioMeasure.AVERAGE_DRAWDOWN_RATIO,
     ],
-    'trading': [
+    "trading": [
         CustomMeasure.WIN_RATE,
         CustomMeasure.AVG_WIN,
         CustomMeasure.AVG_LOSS,
@@ -110,11 +112,11 @@ METRIC_BUNDLES: dict[str, list[BaseMeasure | CustomMeasure]] = {
         CustomMeasure.TIME_IN_MARKET,
     ],
 }
-METRIC_BUNDLES['full'] = (
-    METRIC_BUNDLES['performance'] +
-    METRIC_BUNDLES['risk'] +
-    METRIC_BUNDLES['drawdown'] +
-    METRIC_BUNDLES['trading']
+METRIC_BUNDLES["full"] = (
+    METRIC_BUNDLES["performance"]
+    + METRIC_BUNDLES["risk"]
+    + METRIC_BUNDLES["drawdown"]
+    + METRIC_BUNDLES["trading"]
 )
 
 
@@ -124,12 +126,12 @@ class Portfolio:
         df: IntoDataFrame,
         initial_capital: float = 1_000_000,
         annualized_factor: float | None = None,
-        contract_type: Literal['linear', 'inverse'] = 'linear',
+        contract_type: Literal["linear", "inverse"] = "linear",
         contract_multiplier: float = 1,
         fee_bps: float = 0,
         slippage_bps: float = 0,
         fill_rate: float | None = None,
-        normalize_by: Literal['equity', 'notional'] = 'notional',
+        normalize_by: Literal["equity", "notional"] = "notional",
         risk_free_rate: float = 0,
         **skfolio_kwargs: Any,
     ):
@@ -173,13 +175,19 @@ class Portfolio:
         """
         from pfolio.metrics.returns import absolute_returns
 
-        self._df = to_polars(absolute_returns(
-            df, initial_capital=initial_capital, contract_type=contract_type,
-            contract_multiplier=contract_multiplier,
-            fee_bps=fee_bps, slippage_bps=slippage_bps, fill_rate=fill_rate,
-            normalize_by=normalize_by,
-        ))
-        returns = self._df['ret'].drop_nulls().to_numpy()
+        self._df = to_polars(
+            absolute_returns(
+                df,
+                initial_capital=initial_capital,
+                contract_type=contract_type,
+                contract_multiplier=contract_multiplier,
+                fee_bps=fee_bps,
+                slippage_bps=slippage_bps,
+                fill_rate=fill_rate,
+                normalize_by=normalize_by,
+            )
+        )
+        returns = self._df["ret"].drop_nulls().to_numpy()
 
         if annualized_factor is None:
             annualized_factor = _infer_bars_per_year(self._df)
@@ -195,7 +203,7 @@ class Portfolio:
         # so cumprod would overstate cumulative returns by assuming reinvestment
         # that never happened (and often can't due to lot sizes, min quantities, etc.).
         # equity-normalized returns DO track a real capital base, so cumprod is correct.
-        compounded = normalize_by == 'equity'
+        compounded = normalize_by == "equity"
         self._skfolio = SKPortfolio(
             X=returns.reshape(-1, 1),
             weights=np.array([1.0]),
@@ -204,15 +212,15 @@ class Portfolio:
             risk_free_rate=risk_free_rate,
             **skfolio_kwargs,
         )
-    
+
     @cached_property
     def _dollar_pnls(self) -> NDArray[np.floating]:
-        return self._df['pnl'].drop_nulls().to_numpy()
-    
+        return self._df["pnl"].drop_nulls().to_numpy()
+
     @cached_property
     def _position(self) -> NDArray[np.floating]:
-        return self._df['position'].to_numpy()
-    
+        return self._df["position"].to_numpy()
+
     @property
     def df(self) -> pl.DataFrame:
         return self._df
@@ -222,16 +230,16 @@ class Portfolio:
         return float(self._dollar_pnls.sum())
 
     # Custom stats: maps attr name → (function, data attribute)
-    _CUSTOM_STATS: dict[str, tuple[Any, str]] = {
-        'win_rate': (_win_rate, '_dollar_pnls'),
-        'avg_win': (_avg_win, '_dollar_pnls'),
-        'avg_loss': (_avg_loss, '_dollar_pnls'),
-        'payoff_ratio': (_payoff_ratio, '_dollar_pnls'),
-        'profit_factor': (_profit_factor, '_dollar_pnls'),
-        'time_in_market': (_time_in_market, '_position'),
-        'win_streaks': (_win_streaks, '_dollar_pnls'),
-        'loss_streaks': (_loss_streaks, '_dollar_pnls'),
-        'holding_periods': (_holding_periods, '_position'),
+    _CUSTOM_STATS: ClassVar[dict[str, tuple[Any, str]]] = {
+        "win_rate": (_win_rate, "_dollar_pnls"),
+        "avg_win": (_avg_win, "_dollar_pnls"),
+        "avg_loss": (_avg_loss, "_dollar_pnls"),
+        "payoff_ratio": (_payoff_ratio, "_dollar_pnls"),
+        "profit_factor": (_profit_factor, "_dollar_pnls"),
+        "time_in_market": (_time_in_market, "_position"),
+        "win_streaks": (_win_streaks, "_dollar_pnls"),
+        "loss_streaks": (_loss_streaks, "_dollar_pnls"),
+        "holding_periods": (_holding_periods, "_position"),
     }
 
     def __getattr__(self, name: str):
@@ -239,8 +247,10 @@ class Portfolio:
         if name in self._CUSTOM_STATS:
             func, data_attr = self._CUSTOM_STATS[name]
             return func(object.__getattribute__(self, data_attr))
-        if name == 'drawdown_periods':
-            return _drawdown_periods(cast(NDArray[np.floating], self._skfolio.drawdowns))
+        if name == "drawdown_periods":
+            return _drawdown_periods(
+                cast(NDArray[np.floating], self._skfolio.drawdowns)
+            )
         return getattr(self._skfolio, name)
 
 
@@ -248,12 +258,12 @@ def analyze(
     df: IntoDataFrame,
     initial_capital: float = 1_000_000,
     annualized_factor: float | None = None,
-    contract_type: Literal['linear', 'inverse'] = 'linear',
+    contract_type: Literal["linear", "inverse"] = "linear",
     contract_multiplier: float = 1,
     fee_bps: float = 0,
     slippage_bps: float = 0,
     fill_rate: float | None = None,
-    normalize_by: Literal['equity', 'notional'] = 'notional',
+    normalize_by: Literal["equity", "notional"] = "notional",
     risk_free_rate: float = 0,
     metrics: list[BaseMeasure | CustomMeasure] | None = None,
     metric_bundle: str | None = None,
@@ -292,16 +302,21 @@ def analyze(
             See skfolio.Portfolio documentation for all options.
     """
     portfolio = Portfolio(
-        df, initial_capital=initial_capital, annualized_factor=annualized_factor,
-        contract_type=contract_type, contract_multiplier=contract_multiplier,
-        fee_bps=fee_bps, slippage_bps=slippage_bps,
-        fill_rate=fill_rate, normalize_by=normalize_by,
+        df,
+        initial_capital=initial_capital,
+        annualized_factor=annualized_factor,
+        contract_type=contract_type,
+        contract_multiplier=contract_multiplier,
+        fee_bps=fee_bps,
+        slippage_bps=slippage_bps,
+        fill_rate=fill_rate,
+        normalize_by=normalize_by,
         risk_free_rate=risk_free_rate,
         **skfolio_kwargs,
     )
 
     if metrics is None:
-        selected_bundle = metric_bundle or 'full'
+        selected_bundle = metric_bundle or "full"
         if selected_bundle not in METRIC_BUNDLES:
             raise ValueError(
                 f"Unknown metric_bundle '{selected_bundle}'. Supported: {list(METRIC_BUNDLES.keys())}"
@@ -313,6 +328,8 @@ def analyze(
         attr_name = cast(str, measure.value)  # e.g. 'sharpe_ratio', 'max_drawdown'
         value = getattr(portfolio, attr_name)
         if not isinstance(value, (int, float)):
-            raise TypeError(f"Metric '{attr_name}' resolved to non-numeric value: {type(value)!r}")
+            raise TypeError(
+                f"Metric '{attr_name}' resolved to non-numeric value: {type(value)!r}"
+            )
         results[attr_name] = float(value)
     return results

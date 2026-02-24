@@ -2647,7 +2647,7 @@ packages:
 - pypi: ./
   name: pfolio
   version: 0.0.2
-  sha256: 3eb3d9d603b5ccea394303431e940f4269bb39a2ec3d694da0574552ce730c55
+  sha256: 168fdc18560955b23aa8db1e118b2e3b583cb55768013c1fb69479f7ce9ed749
   requires_dist:
   - narwhals>=2.17.0
   - polars>=1.38.1

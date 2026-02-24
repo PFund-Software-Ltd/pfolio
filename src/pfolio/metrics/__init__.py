@@ -5,7 +5,6 @@ from pfolio.metrics.pnls import (
 )
 from pfolio.metrics.returns import (
     absolute_returns,
-    percentage_returns,
     log_returns,
 )
 
@@ -14,6 +13,5 @@ __all__ = (
     'unrealized_pnls',
     'realized_pnls',
     'absolute_returns',
-    'percentage_returns',
     'log_returns',
 )

@@ -37,7 +37,7 @@ dependencies = [
 [project.urls]
 homepage = "https://pfund.ai"
 repository = "https://github.com/PFund-Software-Ltd/pfolio"
-documentation = "https://pfolio-docs.pfund.ai"
+# documentation = "https://pfolio-docs.pfund.ai"
 
 [build-system]
 requires = ["uv_build>=0.10.4,<0.11.0"]

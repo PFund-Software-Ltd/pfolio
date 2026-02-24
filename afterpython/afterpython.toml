@@ -1,0 +1,10 @@
+[company]
+name = ""
+url = ""
+
+[website]
+url = ""
+favicon = "favicon.svg"
+logo = "logo.svg"
+logo_dark = "logo.svg"
+thumbnail = "thumbnail.png"

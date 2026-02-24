@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, cast
 if TYPE_CHECKING:
     from narwhals.typing import IntoDataFrame
 
@@ -67,13 +67,14 @@ METRIC_BUNDLES: dict[str, list[BaseMeasure]] = {
         RatioMeasure.SHARPE_RATIO,
         RatioMeasure.ANNUALIZED_SHARPE_RATIO,
         RatioMeasure.SORTINO_RATIO,
+        RatioMeasure.ANNUALIZED_SORTINO_RATIO,
         RatioMeasure.CALMAR_RATIO,
     ],
     'risk': [
         RiskMeasure.STANDARD_DEVIATION,
         RiskMeasure.ANNUALIZED_STANDARD_DEVIATION,
-        RiskMeasure.MAX_DRAWDOWN,
         RiskMeasure.CVAR,
+        RiskMeasure.CDAR,
         ExtraRiskMeasure.VALUE_AT_RISK,
         ExtraRiskMeasure.SKEW,
         ExtraRiskMeasure.KURTOSIS,
@@ -81,8 +82,8 @@ METRIC_BUNDLES: dict[str, list[BaseMeasure]] = {
     'drawdown': [
         RiskMeasure.MAX_DRAWDOWN,
         RiskMeasure.AVERAGE_DRAWDOWN,
-        RiskMeasure.CDAR,
-        RatioMeasure.CALMAR_RATIO,
+        ExtraRiskMeasure.DRAWDOWN_AT_RISK,
+        RatioMeasure.DRAWDOWN_AT_RISK_RATIO,
         RatioMeasure.AVERAGE_DRAWDOWN_RATIO,
     ],
 }
@@ -105,6 +106,8 @@ class Portfolio:
         slippage_bps: float = 0,
         fill_rate: float | None = None,
         normalize_by: Literal['equity', 'notional'] = 'notional',
+        risk_free_rate: float = 0,
+        **skfolio_kwargs: Any,
     ):
         """
         Thin wrapper that converts a DataFrame into a skfolio Portfolio.
@@ -138,6 +141,11 @@ class Portfolio:
                   Measures return on total capital including idle cash.
                   Use for pfund's event-driven backtests where the strategy
                   dynamically sizes orders based on current capital.
+            risk_free_rate: Annual risk-free rate (as a decimal, e.g. 0.04 for 4%).
+                Used by excess-return ratios like Sharpe and Sortino. Default 0.
+            **skfolio_kwargs: Additional keyword arguments forwarded to skfolio's Portfolio
+                (e.g. cvar_beta, value_at_risk_beta, min_acceptable_return).
+                See skfolio.Portfolio documentation for all options.
         """
         from pfolio.metrics.returns import absolute_returns
 
@@ -148,7 +156,7 @@ class Portfolio:
             normalize_by=normalize_by,
         ))
         self._dollar_pnls = returns_df['pnl'].drop_nulls().to_numpy()
-        returns = returns_df['abs_ret'].drop_nulls().to_numpy()
+        returns = returns_df['ret'].drop_nulls().to_numpy()
 
         if annualized_factor is None:
             annualized_factor = _infer_bars_per_year(returns_df)
@@ -171,6 +179,8 @@ class Portfolio:
             weights=np.array([1.0]),
             annualized_factor=annualized_factor,
             compounded=compounded,
+            risk_free_rate=risk_free_rate,
+            **skfolio_kwargs,
         )
 
     def total_pnl(self) -> float:
@@ -192,8 +202,10 @@ def analyze(
     slippage_bps: float = 0,
     fill_rate: float | None = None,
     normalize_by: Literal['equity', 'notional'] = 'notional',
+    risk_free_rate: float = 0,
     metrics: list[BaseMeasure] | None = None,
     metric_bundle: str | None = None,
+    **skfolio_kwargs: Any,
 ) -> dict[str, float]:
     """Analyze a DataFrame and return selected metrics.
     Args:
@@ -218,15 +230,22 @@ def analyze(
         fill_rate: Volume participation rate (0-1). Caps fill size at fill_rate * volume.
         normalize_by: How to normalize dollar P&L into returns. Default 'notional'.
             See Portfolio docstring for details.
+        risk_free_rate: Annual risk-free rate (as a decimal, e.g. 0.04 for 4%).
+            Used by excess-return ratios like Sharpe and Sortino. Default 0.
         metrics: List of skfolio measure enums to compute.
         metric_bundle: Metric bundle name ('performance', 'risk', 'drawdown', 'full').
             Ignored if metrics is provided.
+        **skfolio_kwargs: Additional keyword arguments forwarded to skfolio's Portfolio
+            (e.g. cvar_beta, value_at_risk_beta, min_acceptable_return).
+            See skfolio.Portfolio documentation for all options.
     """
     portfolio = Portfolio(
         df, initial_capital=initial_capital, annualized_factor=annualized_factor,
         contract_type=contract_type, contract_multiplier=contract_multiplier,
         fee_bps=fee_bps, slippage_bps=slippage_bps,
         fill_rate=fill_rate, normalize_by=normalize_by,
+        risk_free_rate=risk_free_rate,
+        **skfolio_kwargs,
     )
 
     if metrics is None:

@@ -43,7 +43,7 @@ def absolute_returns(
               Use for pfund's event-driven backtests where the strategy
               dynamically sizes orders based on current capital.
 
-    Adds columns: 'pnl', 'abs_ret' (and 'equity' when normalize_by='equity')
+    Adds columns: 'pnl', 'ret' (and 'equity' when normalize_by='equity')
     """
     if normalize_by == 'equity' and initial_capital <= 0:
         raise ValueError(f"initial_capital must be positive, got {initial_capital}")
@@ -57,7 +57,7 @@ def absolute_returns(
         _df = _df.with_columns(
             (pl.lit(initial_capital) + pl.col('pnl').cum_sum()).alias('equity')
         )
-        # abs_ret = pnl / prev_equity
+        # ret = pnl / prev_equity
         # For bar 0, prev_equity = initial_capital (equity before any P&L)
         prev_equity = (
             pl.col('equity')
@@ -66,10 +66,10 @@ def absolute_returns(
             .fill_null(pl.lit(initial_capital))
         )
         _df = _df.with_columns(
-            (pl.col('pnl') / prev_equity).alias('abs_ret')
+            (pl.col('pnl') / prev_equity).alias('ret')
         )
     elif normalize_by == 'notional':
-        # abs_ret = pnl / notional_exposure
+        # ret = pnl / notional_exposure
         # Notional is contract-type-aware (from get_contract_expressions).
         from pfolio.const import SUPPORTED_PRICE_COLUMNS
         ref_price = next(c for c in SUPPORTED_PRICE_COLUMNS if c in _df.columns)
@@ -88,7 +88,7 @@ def absolute_returns(
             pl.when((notional == 0) | notional.is_null())
                 .then(pl.lit(0.0))
                 .otherwise(pl.col('pnl') / notional)
-                .alias('abs_ret')
+                .alias('ret')
         )
     else:
         raise ValueError(f"normalize_by must be 'equity' or 'notional', got '{normalize_by}'")
@@ -106,13 +106,13 @@ def log_returns(
     fill_rate: float | None = None,
     normalize_by: Literal['equity', 'notional'] = 'notional',
 ) -> IntoDataFrameT:
-    """Calculate log returns = ln(1 + abs_ret).
+    """Calculate log returns = ln(1 + ret).
 
     Note that:
         ln(p2/p1) ≈ (p2-p1)/p1 (according to Taylor's Series)
         Approximately equal to absolute returns for small changes.
 
-    Adds columns: 'pnl', 'abs_ret', 'log_ret' (and 'equity' when normalize_by='equity')
+    Adds columns: 'pnl', 'ret', 'log_ret' (and 'equity' when normalize_by='equity')
     """
     _df = to_polars(
         absolute_returns(df, initial_capital=initial_capital, contract_type=contract_type,
@@ -121,7 +121,7 @@ def log_returns(
                          normalize_by=normalize_by)
     )
     _df = _df.with_columns(
-        (1 + pl.col('abs_ret')).log().alias('log_ret')
+        (1 + pl.col('ret')).log().alias('log_ret')
     )
     return to_input_df(_df, native_backend=detect_backend(df))
 

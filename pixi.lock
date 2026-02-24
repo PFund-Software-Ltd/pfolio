@@ -4484,8 +4484,8 @@ packages:
   - ptyprocess>=0.5
 - pypi: ./
   name: pfolio
-  version: 0.0.2
-  sha256: 539c20ef8764f1087efbde3d165e8e8be23428a54943770728e66b0eaf68c4c3
+  version: 0.0.3
+  sha256: 33a17cc96229af92a1c7a41ac4191a3825758ca5832318f49514ea4a5412d916
   requires_dist:
   - narwhals>=2.17.0
   - polars>=1.38.1

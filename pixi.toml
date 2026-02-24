@@ -2,7 +2,7 @@
 authors = ["softwareentrepreneer <softwareentrepreneer@gmail.com>"]
 channels = ["conda-forge"]
 name = "pfolio"
-platforms = ["osx-arm64"]
+platforms = ["osx-arm64", "linux-64"]
 # updating this needs to also update the version in the ci.yml and templates/ci-workflow-template.yml files
 requires-pixi = ">=0.63.2"  # command: pixi workspace requires-pixi set ">=0.63.2"
 
@@ -25,6 +25,7 @@ py313 = ["py313", "test", "optional"]
 python = ">=3.11.14"
 uv = ">=0.10.4"
 libpq = ">=18.1"  # for library "qis", which requires postgresql
+gh = ">=2.87.2"
 
 [pypi-dependencies]
 narwhals = ">=2.17.0"

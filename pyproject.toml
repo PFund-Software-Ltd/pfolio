@@ -28,6 +28,11 @@ dependencies = [
     "skfolio>=0.15.5",
 ]
 
+[dependency-groups]
+dev = [
+    "afterpython>=0.2.0",
+]
+
 # [project.scripts]
 # pfolio = "pfolio.__main__:run_cli"
 

@@ -4,7 +4,7 @@ channels = ["conda-forge"]
 name = "pfolio"
 platforms = ["osx-arm64", "linux-64"]
 # updating this needs to also update the version in the ci.yml and templates/ci-workflow-template.yml files
-requires-pixi = ">=0.63.2"  # command: pixi workspace requires-pixi set ">=0.63.2"
+requires-pixi = ">=0.68.1"  # command: pixi workspace requires-pixi set ">=0.68.1"
 
 [tasks]
 
@@ -22,34 +22,34 @@ py312 = ["py312", "test", "optional"]
 py313 = ["py313", "test", "optional"]
 
 [dependencies]
-python = ">=3.11.14"
-uv = ">=0.10.4"
-libpq = ">=18.1"  # for library "qis", which requires postgresql
-gh = ">=2.87.2"
+python = ">=3.11.15"
+uv = ">=0.11.14"
+libpq = ">=18.3"  # for library "qis", which requires postgresql
+gh = ">=2.92.0"
 
 [pypi-dependencies]
-narwhals = ">=2.17.0"
-polars = ">=1.38.1"
-skfolio = ">=0.15.5"
+narwhals = ">=2.21.0"
+polars = ">=1.40.1"
+skfolio = ">=0.20.1"
 
 [feature.optional.pypi-dependencies]
 
 [feature.dev.pypi-dependencies]
 pfolio = { path = ".", editable = true }
 pandas-stubs = ">=2.3.3.260113"
-afterpython = ">=0.2.0"
-marimo = { version = ">=0.20.2", extras = ["recommended", "lsp"] }
-basedpyright = ">=1.38.1"
+afterpython = ">=0.3.2"
+basedpyright = ">=1.39.4"
+marimo = { version = ">=0.23.6", extras = ["recommended", "lsp"] }
 # TEMP: for reference
-qis = ">=3.4.7"
+qis = ">=4.2.0"
 pyfolio-reloaded = ">=0.9.9"
 empyrical-reloaded = ">=0.5.12"
 quantstats = ">=0.0.81"
 thepassiveinvestor = ">=1.2.2"
 
 [feature.test.pypi-dependencies]
-pytest = ">=9.0.2"
-pytest-cov = ">=7.0.0"
+pytest = ">=9.0.3"
+pytest-cov = ">=7.1.0"
 pytest-mock = ">=3.15.1"
 pytest-xdist = ">=3.8.0"
 [feature.test.tasks]

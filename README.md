@@ -1,11 +1,13 @@
 # Portfolio Analytics & Optimization
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/pfund_ai?style=social)](https://x.com/pfund_ai)
-![PyPI downloads](https://img.shields.io/pypi/dm/pfolio?label=downloads)
-[![PyPI](https://img.shields.io/pypi/v/pfolio.svg)](https://pypi.org/project/pfolio)
-![PyPI - Support Python Versions](https://img.shields.io/pypi/pyversions/pfolio)
+[![Downloads](https://static.pepy.tech/badge/pfolio/month)](https://pepy.tech/project/pfolio)
+[![PyPI](https://img.shields.io/pypi/v/pfolio.svg?cacheSeconds=300)](https://pypi.org/project/pfolio)
+![PyPI - Support Python Versions](https://img.shields.io/pypi/pyversions/pfolio?cacheSeconds=300)
 [![Discussions](https://img.shields.io/badge/Discussions-Let's%20Chat-green)](https://github.com/PFund-Software-Ltd/pfolio/discussions)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/PFund-Software-Ltd/pfolio)
+[![View Code Wiki](https://assets.codewiki.google/readme-badge/static.svg)](https://codewiki.google/github.com/pfund-software-ltd/pfolio?utm_source=badge&utm_medium=github&utm_campaign=github.com/pfund-software-ltd/pfolio)
+<!-- ![PyPI downloads](https://img.shields.io/pypi/dm/pfolio?label=downloads&cacheSeconds=86400) -->
 <!-- ![GitHub stars](https://img.shields.io/github/stars/PFund-Software-Ltd/pfolio?style=social) -->
 <!-- [![afterpython](https://afterpython.org/shield.svg)](https://afterpython.org) -->
 

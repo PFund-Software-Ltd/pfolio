@@ -23,14 +23,9 @@ classifiers = [
 ]
 requires-python = ">=3.11"
 dependencies = [
-    "narwhals>=2.17.0",
-    "polars>=1.38.1",
-    "skfolio>=0.15.5",
-]
-
-[dependency-groups]
-dev = [
-    "afterpython>=0.2.0",
+    "narwhals>=2.21.0",
+    "polars>=1.40.1",
+    "skfolio>=0.20.1",
 ]
 
 # [project.scripts]
@@ -45,7 +40,7 @@ repository = "https://github.com/PFund-Software-Ltd/pfolio"
 # documentation = "https://pfolio-docs.pfund.ai"
 
 [build-system]
-requires = ["uv_build>=0.10.4,<0.11.0"]
+requires = ["uv_build>=0.11.14,<0.12.0"]
 build-backend = "uv_build"
 
 [tool.pyright]

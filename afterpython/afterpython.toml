@@ -1,10 +1,14 @@
 [company]
-name = ""
-url = ""
+name = "PFund.ai"
+url = "https://pfund.ai"
 
 [website]
-url = ""
+url = "https://pfolio.pfund.ai"
 favicon = "favicon.svg"
 logo = "logo.svg"
-logo_dark = "logo.svg"
+logo_dark = "logo-dark.svg"
 thumbnail = "thumbnail.png"
+announcement = ""
+readme_py = "wasm"
+execute_readme_py = true  # execute README.py cells at build time and embed outputs as a preview (wasm mode only)
+api_reference = false

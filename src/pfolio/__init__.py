@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    import pfund_plot as plot
     from pfolio.portfolio import Portfolio, analyze
     from pfolio.metrics.stats import (
         win_streaks as win_streaks,
@@ -92,12 +91,8 @@ if TYPE_CHECKING:
         GINI_MEAN_DIFFERENCE_RATIO as GINI_MEAN_DIFFERENCE_RATIO,
     )
 
-from importlib.metadata import version
 
 from pfolio.config import configure, get_config
-
-__version__ = version("pfolio")
-
 
 # All alias names from utils/aliases.py
 _ALIASES = (
@@ -181,10 +176,10 @@ _ALIASES = (
 
 
 def __getattr__(name: str):
-    if name == "plot":
-        import pfund_plot as plot
+    if name == "__version__":
+        from importlib.metadata import version
 
-        return plot
+        return version("pfolio")
     elif name == "Portfolio":
         from pfolio.portfolio import Portfolio
 
@@ -218,10 +213,8 @@ def __getattr__(name: str):
 
 
 __all__ = (
-    "__version__",
     "get_config",
     "configure",
-    "plot",
     "Portfolio",
     "analyze",
     # stats (return arrays, not floats) that are not covered in CustomMeasure
